@@ -23,8 +23,10 @@
  *   getComposition(Math.sin, Math.asin)(x) => Math.sin(Math.asin(x))
  *
  */
-function getComposition(/* f, g */) {
-  throw new Error('Not implemented');
+function getComposition(f, g) {
+  return function gx(x) {
+    return f(g(x));
+  };
 }
 
 
@@ -44,8 +46,10 @@ function getComposition(/* f, g */) {
  *   power05(16) => 4
  *
  */
-function getPowerFunction(/* exponent */) {
-  throw new Error('Not implemented');
+function getPowerFunction(exponent) {
+  return function arg(x) {
+    return x ** exponent;
+  };
 }
 
 
@@ -62,8 +66,18 @@ function getPowerFunction(/* exponent */) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+function getPolynom(...args) {
+  const k = args;
+  const i = [];
+  k.map((el, ind) => i.push(ind));
+  i.reverse();
+  return function checkPoint(x) {
+    let y = 0;
+    for (let j = 0; j < k.length; j += 1) {
+      y += k[j] * (x ** i[j]);
+    }
+    return y;
+  };
 }
 
 
@@ -81,8 +95,17 @@ function getPolynom() {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  const cache = {};
+  return function memoized() {
+    const key = func;
+    if (key in cache) {
+      return cache[key];
+    }
+    const result = func();
+    cache[key] = result;
+    return result;
+  };
 }
 
 
@@ -169,8 +192,18 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  const cache = {};
+  return function counter() {
+    let result = startFrom;
+    if (startFrom in cache) {
+      cache[startFrom] += 1;
+      result = cache[startFrom];
+    } else {
+      cache[startFrom] = startFrom;
+    }
+    return result;
+  };
 }
 
 
