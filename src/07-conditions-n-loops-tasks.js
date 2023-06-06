@@ -168,8 +168,8 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  return ((circle.center.x - point.x) ** 2 + (circle.center.y - point.y) ** 2) < circle.radius ** 2;
 }
 
 
@@ -289,8 +289,18 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const numbersArray = ccn.toString().split('').reverse().map((el) => +el);
+  const sumOfEvenIndex = numbersArray.filter((el, i) => i % 2 === 0).reduce((acc, el) => acc + el);
+  const sumOfOddIndex = numbersArray.filter((el, i) => i % 2 !== 0).map((el) => {
+    let newEl = el * 2;
+    if (newEl > 9) {
+      newEl -= 9;
+    }
+    return newEl;
+  }).reduce((acc, el) => acc + el);
+
+  return ((sumOfEvenIndex + sumOfOddIndex) % 10 === 0);
 }
 
 /**
@@ -341,8 +351,24 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const map = {
+    ')': '(',
+    ']': '[',
+    '}': '{',
+    '>': '<',
+  };
+  const stack = [];
+  for (let i = 0; i < str.length; i += 1) {
+    if (stack.length === 0) {
+      stack.push(str[i]);
+    } else if (stack.length !== 0 && stack[stack.length - 1] === map[str[i]]) {
+      stack.pop();
+    } else {
+      stack.push(str[i]);
+    }
+  }
+  return (stack.length === 0);
 }
 
 
@@ -366,8 +392,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 
@@ -383,8 +409,23 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const lengths = [];
+  const newPathes = pathes.map((el) => {
+    lengths.push(el.split('/').length);
+    return el.split('/');
+  });
+  lengths.sort();
+  const result = [];
+  for (let i = 0; i < lengths[0]; i += 1) {
+    if (newPathes.every((el) => el[i] === newPathes[0][i])) {
+      result.push(newPathes[0][i]);
+    } else {
+      result.push('');
+      break;
+    }
+  }
+  return (result.join('/'));
 }
 
 
@@ -406,8 +447,17 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const multipliedMatrix = new Array(m1.length);
+  for (let i = 0; i < m1.length; i += 1) {
+    multipliedMatrix[i] = new Array(m2[0].length).fill(0);
+    for (let j = 0; j < m2[0].length; j += 1) {
+      for (let k = 0; k < m2.length; k += 1) {
+        multipliedMatrix[i][j] += m1[i][k] * m2[k][j];
+      }
+    }
+  }
+  return (multipliedMatrix);
 }
 
 
@@ -441,10 +491,46 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
-}
+function evaluateTicTacToePosition(position) {
+  const combinations = [];
+  position.forEach((el) => combinations.push(el.join('')));
+  for (let i = 0; i < position.length; i += 1) {
+    let column = '';
+    for (let j = 0; j < position[i].length; j += 1) {
+      if (position[j][i]) {
+        column += position[j][i];
+      } else {
+        column += '';
+      }
+    }
+    combinations.push(column);
+  }
+  let diag1 = '';
+  let diag2 = '';
+  for (let i = 0; i < position.length; i += 1) {
+    if (position[i][i]) {
+      diag1 += position[i][i];
+    } else {
+      diag1 += '';
+    }
 
+    if (position[i][(position.length - 1) - i]) {
+      diag2 += position[i][(position.length - 1) - i];
+    } else {
+      diag2 += '';
+    }
+  }
+  combinations.push(diag1, diag2);
+  let result;
+  if (combinations.includes('XXX')) {
+    result = 'X';
+  } else if (combinations.includes('000')) {
+    result = '0';
+  } else {
+    result = undefined;
+  }
+  return result;
+}
 
 module.exports = {
   getFizzBuzz,
