@@ -28,8 +28,16 @@
  *      .catch((error) => console.log(error.message)) // 'Error: Wrong parameter is passed!
  *                                                    //  Ask her again.';
  */
-function willYouMarryMe(/* isPositiveAnswer */) {
-  throw new Error('Not implemented');
+function willYouMarryMe(isPositiveAnswer) {
+  return new Promise((res, rej) => {
+    if (typeof isPositiveAnswer !== 'boolean') {
+      rej(new Error('Wrong parameter is passed! Ask her again.'));
+    } else if (isPositiveAnswer) {
+      res('Hooray!!! She said "Yes"!');
+    } else if (!isPositiveAnswer) {
+      res('Oh no, she said "No".');
+    }
+  });
 }
 
 
@@ -48,8 +56,14 @@ function willYouMarryMe(/* isPositiveAnswer */) {
  *    })
  *
  */
-function processAllPromises(/* array */) {
-  throw new Error('Not implemented');
+function processAllPromises(array) {
+  return new Promise((resolve) => {
+    const result = [];
+    array.forEach((el) => {
+      el.then((res) => result.push(res));
+    });
+    resolve(result);
+  });
 }
 
 /**
@@ -71,9 +85,28 @@ function processAllPromises(/* array */) {
  *    })
  *
  */
-function getFastestPromise(/* array */) {
-  throw new Error('Not implemented');
+function getFastestPromise(array) {
+  return new Promise((resolve, reject) => {
+    let isRejected = false;
+
+    array.forEach((promise) => {
+      promise
+        .then((value) => {
+          if (!isRejected) {
+            resolve(value);
+            isRejected = true;
+          }
+        })
+        .catch((error) => {
+          if (!isRejected) {
+            reject(error);
+            isRejected = true;
+          }
+        });
+    });
+  });
 }
+
 
 /**
  * Return Promise object that should be resolved with value that is
@@ -92,8 +125,33 @@ function getFastestPromise(/* array */) {
  *    });
  *
  */
-function chainPromises(/* array, action */) {
-  throw new Error('Not implemented');
+function chainPromises(array, action) {
+  return new Promise((resolve) => {
+    let result = [];
+
+    function processPromise(index) {
+      if (index >= array.length) {
+        if (result.length !== 0) {
+          result = result.reduce(action);
+        } else {
+          result = '';
+        }
+        resolve(result);
+        return;
+      }
+
+      array[index]
+        .then((res) => {
+          result.push(res);
+          processPromise(index + 1);
+        })
+        .catch((error) => {
+          resolve(error);
+        });
+    }
+
+    processPromise(0);
+  });
 }
 
 module.exports = {
